@@ -48,7 +48,11 @@ class RegisterForEventView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)  # auto-assign logged-in user
+        # Debug: Check if user is authenticated
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User must be authenticated to register for an event.")
+        serializer.save(user=user)  # auto-assign logged-in user
 
 
 class MyRegistrationsView(generics.ListAPIView):

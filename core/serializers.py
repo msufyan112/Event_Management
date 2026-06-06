@@ -27,7 +27,16 @@ class EventSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         # end time must be after start time
-        if attrs['end_datetime'] <= attrs['start_datetime']:
+        # Only validate if both fields are being updated or created
+        end_datetime = attrs.get('end_datetime')
+        start_datetime = attrs.get('start_datetime')
+        
+        # If updating, use existing values if not provided
+        if self.instance:
+            end_datetime = end_datetime or self.instance.end_datetime
+            start_datetime = start_datetime or self.instance.start_datetime
+        
+        if end_datetime and start_datetime and end_datetime <= start_datetime:
             raise serializers.ValidationError("End datetime must be after start datetime.")
         return attrs
 
@@ -49,6 +58,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'status', 'registered_at']
 
     def validate(self, attrs):
+        if 'request' not in self.context:
+            raise serializers.ValidationError("Request context is required.")
+        
         user = self.context['request'].user
         event = attrs['event']
 

@@ -1,0 +1,269 @@
+{
+  "info": {
+    "name": "Task 2 — Event Registration System",
+    "description": "Full API collection for the Event Registration System built with Django REST Framework & JWT Authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "👤 Auth",
+      "item": [
+        {
+          "name": "Register — Attendee",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "register", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_attendee\",\n  \"email\": \"john@example.com\",\n  \"password\": \"StrongPass123!\",\n  \"password2\": \"StrongPass123!\",\n  \"role\": \"attendee\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register — Organizer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "register", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sara_organizer\",\n  \"email\": \"sara@example.com\",\n  \"password\": \"StrongPass123!\",\n  \"password2\": \"StrongPass123!\",\n  \"role\": \"organizer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', json.access);",
+                  "pm.collectionVariables.set('refresh_token', json.refresh);",
+                  "console.log('Access token saved!');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "login", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sara_organizer\",\n  \"password\": \"StrongPass123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "token", "refresh", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "profile", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Events",
+      "item": [
+        {
+          "name": "List All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/events/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Event (Organizer Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Django Workshop 2026\",\n  \"description\": \"A hands-on workshop to learn Django REST Framework from scratch.\",\n  \"location\": \"Lahore, Pakistan\",\n  \"start_datetime\": \"2026-08-01T10:00:00Z\",\n  \"end_datetime\": \"2026-08-01T14:00:00Z\",\n  \"capacity\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Event Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/events/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Update Event (Organizer Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", "1", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Django Workshop 2026 — Updated\",\n  \"capacity\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Event (Organizer Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", "1", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Registrations",
+      "item": [
+        {
+          "name": "Register for Event (Attendee Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/events/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "events", "register", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "My Registrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/my-registrations/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "my-registrations", ""]
+            }
+          }
+        },
+        {
+          "name": "Cancel Registration",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/registrations/1/cancel/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "registrations", "1", "cancel", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

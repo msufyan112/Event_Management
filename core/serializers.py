@@ -55,7 +55,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'id', 'user', 'event', 'event_title',
             'event_date', 'status', 'registered_at'
         ]
-        read_only_fields = ['user', 'status', 'registered_at']
+        read_only_fields = ['user', 'event', 'status', 'registered_at']  # event is now auto-assigned from URL
 
     def validate(self, attrs):
         if 'request' not in self.context:

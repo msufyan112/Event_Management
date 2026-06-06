@@ -46,13 +46,26 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
 class RegisterForEventView(generics.CreateAPIView):
     serializer_class = RegistrationSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = Event.objects.all()  # needed for get_object()
+
+    def get_object(self):
+        """Fetch the event from URL parameter."""
+        event_id = self.kwargs.get('event_id')
+        try:
+            return Event.objects.get(pk=event_id)
+        except Event.DoesNotExist:
+            from rest_framework.exceptions import NotFound
+            raise NotFound("Event not found.")
 
     def perform_create(self, serializer):
-        # Debug: Check if user is authenticated
+        # Check if user is authenticated
         user = self.request.user
         if not user or not user.is_authenticated:
             raise PermissionDenied("User must be authenticated to register for an event.")
-        serializer.save(user=user)  # auto-assign logged-in user
+        
+        # Get the event from the URL parameter
+        event = self.get_object()
+        serializer.save(user=user, event=event)  # auto-assign logged-in user and event
 
 
 class MyRegistrationsView(generics.ListAPIView):
